@@ -1,0 +1,27 @@
+spring:
+  ai:
+    openai:
+      api-key: ${DEEPSEEK_API_KEY:sk-9e8c2611b860469ea927f53d93a2ee77}
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
+    vectorstore:
+      elasticsearch:
+        index-name: rag-documents
+        embedding-dimensions: 1536
+        similarity: cosine
+
+  elasticsearch:
+    uris: http://localhost:9200
+    username: 
+    password: 
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.ai: DEBUG
+    com.example.rag: DEBUG
