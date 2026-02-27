@@ -21,7 +21,83 @@ spring:
 server:
   port: 8080
 
+# NL2SQL 配置
+nl2sql:
+  # 默认SQL方言
+  default-dialect: mysql
+  # 向量检索返回的候选表数量
+  top-k: 5
+  # 字段提取Agent配置
+  field-extractor:
+    enabled: true
+    max-fields: 50
+  # SQL生成Agent配置
+  sql-generator:
+    enabled: true
+    max-rows: 100
+  # 支持的SQL方言配置
+  dialects:
+    mysql:
+      identifier-quote: "`"
+      pagination: "LIMIT {limit} OFFSET {offset}"
+      date-functions:
+        - NOW()
+        - DATE_FORMAT()
+        - DATEDIFF()
+    postgresql:
+      identifier-quote: "\""
+      pagination: "LIMIT {limit} OFFSET {offset}"
+      date-functions:
+        - NOW()
+        - TO_CHAR()
+        - AGE()
+    sqlite:
+      identifier-quote: "\""
+      pagination: "LIMIT {limit} OFFSET {offset}"
+      date-functions:
+        - datetime()
+        - date()
+        - strftime()
+    oracle:
+      identifier-quote: "\""
+      pagination: "OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY"
+      date-functions:
+        - SYSDATE
+        - TO_DATE()
+        - TO_CHAR()
+    sqlserver:
+      identifier-quote: "[]"
+      pagination: "OFFSET {offset} ROWS FETCH NEXT {limit} ROWS ONLY"
+      date-functions:
+        - GETDATE()
+        - CONVERT()
+        - FORMAT()
+
+# 向量存储配置
+spring:
+  ai:
+    openai:
+      api-key: ${DEEPSEEK_API_KEY:sk-9e8c2611b860469ea927f53d93a2ee77}
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
+    vectorstore:
+      elasticsearch:
+        index-name: rag-documents
+        embedding-dimensions: 1536
+        similarity: cosine
+        # NL2SQL表结构索引配置
+        nl2sql-index: nl2sql-table-schemas
+
+  elasticsearch:
+    uris: http://localhost:9200
+    username: 
+    password: 
+
 logging:
   level:
     org.springframework.ai: DEBUG
     com.example.rag: DEBUG
+    com.example.rag.nl2sql: DEBUG
